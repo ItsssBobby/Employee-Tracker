@@ -1,16 +1,15 @@
 // Import and require mysql2
 const mysql = require('mysql2');
-const inquirer = require('inquirer')
+const inquirer = require('inquirer');
 require('console.table');
 // Connect to database
 const db = mysql.createConnection(
   {
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: 'Bobbymac123',
     database: 'employee_db'
   },
-  console.log(`Connected to the employee database.`)
 );
 
 db.connect(function(err) {
