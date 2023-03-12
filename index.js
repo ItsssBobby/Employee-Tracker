@@ -66,3 +66,33 @@ db.connect(function(err) {
         }
       });
   }
+
+  function viewDepartment() {
+    // select from the db
+    let query = "SELECT * FROM department";
+    db.query(query, function(err, res) {
+      if (err) throw err;
+      console.table(res);
+      mainMenu();
+    });
+  }
+  
+  function viewRoles() {
+    // select from the db
+    let query = "SELECT * FROM role";
+    db.query(query, function(err, res) {
+      if (err) throw err;
+      console.table(res);
+      mainMenu();
+    });
+  }
+  
+  function viewEmployees() {
+    // select from the db
+    let query = "SELECT * FROM employee";
+    db.query(query, function(err, res) {
+      if (err) throw err;
+      console.table(res);
+      mainMenu();
+    });
+  }
