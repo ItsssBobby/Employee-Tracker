@@ -30,6 +30,7 @@ function mainMenu() {
           "View departments",
           "View roles",
           "View employees",
+          // "View salary totals",
           "Update employee role",
           "Quit"
         ],
@@ -58,6 +59,9 @@ function mainMenu() {
           case "View employees":
             viewEmployees();
             break;
+          // case "View salary totals":
+          //   viewSalaries();
+          //   break;
           case "Update employee role":
             updateEmployee();
             break;
@@ -97,6 +101,16 @@ function viewEmployees() {
     });
 }
 
+// function viewSalaries() {
+
+//   let query = 'SELECT role_id, SUM(salary) FROM employee GROUP BY department';
+//   db.query(query, function(err, res) {
+//     if (err) throw err;
+//     console.table(res)
+//     mainMenu();
+//   });
+// }
+
 function addDepartment() {
 
     inquirer.prompt({
@@ -106,9 +120,6 @@ function addDepartment() {
         name: "deptName"
 
     }).then(answer => {
-
-
-
         db.query("INSERT INTO department (dept_name) VALUES (?)", [answer.deptName] , function(err, res) {
             if (err) throw err;
             db.query('SELECT * FROM department', (err, res) => {
@@ -212,3 +223,46 @@ function addRole() {
     });
   });
 }
+
+function updateEmployee() {
+  db.query('SELECT * FROM employee', (err, employeeRes) => {
+    if (err) throw err;
+    employeeRes = employeeRes.map((employee) => {
+        return {
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id
+        }
+    })
+db.query('SELECT * FROM role', (err, roleRes) => {
+    if (err) throw err;
+    roleRes = roleRes.map((role) => {
+        return {
+            name: role.title,
+            value: role.id
+        };
+    })
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "Which employee would you like to update?",
+        name: "updateEmp",
+        choices: employeeRes
+      },
+
+      {
+        type: "list",
+        message: "What do you want to update to?",
+        name: "updateRole",
+        choices: roleRes
+      }
+    ])
+    .then ((answer) => {
+        db.query(`UPDATE employee SET role_id = ${answer.updateRole} WHERE id = ${answer.updateEmp}`)
+        console.log('Updated!')
+        mainMenu();
+      });
+    });
+})}
+
+
