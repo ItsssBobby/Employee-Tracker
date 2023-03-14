@@ -32,7 +32,7 @@ function mainMenu() {
           "View employees",
           // "View salary totals",
           "Update employee role",
-          "Quit"
+          "Exit"
         ],
         message: "What would you like to do?",
         name: "option"
@@ -65,8 +65,9 @@ function mainMenu() {
           case "Update employee role":
             updateEmployee();
             break;
-          default:
-            quit();
+         case 'Exit':
+            console.log('Have a good day!')
+            process.exit();
         }
       });
 }
@@ -264,5 +265,3 @@ db.query('SELECT * FROM role', (err, roleRes) => {
       });
     });
 })}
-
-
