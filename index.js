@@ -227,42 +227,49 @@ function addRole() {
 }
 
 function updateEmployee() {
-  db.query('SELECT * FROM employee', (err, employeeRes) => {
+  db.query("SELECT * FROM employee", (err, employeeRes) => {
     if (err) throw err;
     employeeRes = employeeRes.map((employee) => {
-        return {
-            name: `${employee.first_name} ${employee.last_name}`,
-            value: employee.id
-        }
-    })
-db.query('SELECT * FROM role', (err, roleRes) => {
-    if (err) throw err;
-    roleRes = roleRes.map((role) => {
-        return {
-            name: role.title,
-            value: role.id
-        };
-    })
-  inquirer
-    .prompt([
-      {
-        type: "list",
-        message: "Which employee would you like to update?",
-        name: "updateEmp",
-        choices: employeeRes
-      },
-
-      {
-        type: "list",
-        message: "What do you want to update to?",
-        name: "updateRole",
-        choices: roleRes
-      }
-    ])
-    .then ((answer) => {
-        db.query(`UPDATE employee SET role_id = ${answer.updateRole} WHERE id = ${answer.updateEmp}`)
-        console.log('Updated!')
-        mainMenu();
-      });
+      return {
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id,
+      };
     });
-})}
+
+    db.query("SELECT * FROM role", (err, roleRes) => {
+      if (err) throw err;
+      roleRes = roleRes.map((role) => {
+        return {
+          name: role.title,
+          value: role.id,
+        };
+      });
+
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            message: "Which employee would you like to update?",
+            name: "updateEmp",
+            choices: employeeRes,
+          },
+          {
+            type: "list",
+            message: "What do you want to update to?",
+            name: "updateRole",
+            choices: roleRes,
+          },
+        ])
+        .then((answer) => {
+          db.query(
+            `UPDATE employee SET role_id = ${answer.updateRole} WHERE id = ${answer.updateEmp}`,
+            (err, res) => {
+              if (err) throw err;
+              console.log("Updated!");
+              mainMenu();
+            }
+          );
+        });
+    });
+  });
+}
