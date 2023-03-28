@@ -8,7 +8,8 @@ const db = mysql.createConnection(
     host: 'localhost',
     user: 'root',
     password: 'Bobbymac123',
-    database: 'employee_db'
+    database: 'employee_db',
+    multipleStatements: true
   },
 );
 
@@ -135,55 +136,55 @@ function addDepartment() {
 }
 
 function addEmployee() {
-  db.query('SELECT * FROM employee', (err, employeeRes) => {
-      if (err) throw err;
-      employeeRes = employeeRes.map((employee) => {
-          return {
-              name: `${employee.first_name} ${employee.last_name}`,
-              value: employee.id
-          }
-      })
-  db.query('SELECT * FROM role', (err, roleRes) => {
-      if (err) throw err;
-      roleRes = roleRes.map((role) => {
-          return {
-              name: role.title,
-              value: role.id
-          };
-      })
-  inquirer
-      .prompt([
-          {
-              type: 'input',
-              name: 'FirstName',
-              message: "What is the employee's first name?"
-          },
-          {
-              type: 'input',
-              name: 'LastName',
-              message: "What is the employee's last name?"
-          },
-          {
-              type: 'list',
-              name: 'Role',
-              message: "What is the role of the new employee?",
-              choices: roleRes
-          },
-          {
-              type: 'list',
-              name: 'Manager',
-              message: "Who is the employee's manager?",
-              choices: employeeRes
-          }
-      ]).then((answer) => {
-              db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [answer.FirstName, answer.LastName, answer.Role, answer.Manager], (err, res) => {
-                  if (err) throw err;
-                  console.log('Employee added!')
-                  mainMenu();
-              });
-          });
+  db.query('SELECT CONCAT(first_name, " ", last_name) AS name, id FROM employee; SELECT title, id FROM role', (err, results) => {
+    if (err) throw err;
+
+    const employeeRes = results[0].map((employee) => {
+      return {
+        name: employee.name,
+        value: employee.id,
+      };
+    });
+
+    const roleRes = results[1].map((role) => {
+      return {
+        name: role.title,
+        value: role.id,
+      };
+    });
+
+    inquirer.prompt([
+      {
+        type: 'input',
+        name: 'FirstName',
+        message: "What is the employee's first name?"
+      },
+      {
+        type: 'input',
+        name: 'LastName',
+        message: "What is the employee's last name?"
+      },
+      {
+        type: 'list',
+        name: 'Role',
+        message: "What is the role of the new employee?",
+        choices: roleRes
+      },
+      {
+        type: 'list',
+        name: 'Manager',
+        message: "Who is the employee's manager?",
+        choices: employeeRes
+      }
+    ]).then((answer) => {
+      db.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)', [answer.FirstName, answer.LastName, answer.Role, answer.Manager], (err, res) => {
+        if (err) throw err;
+        console.log('Employee added!');
+        mainMenu();
       });
-})};
+    });
+  });
+}
 
 function addRole() {
   db.query('SELECT * FROM department', (err, deptRes) => {
