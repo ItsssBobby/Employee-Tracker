@@ -218,7 +218,8 @@ function addRole() {
 
       db.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", [answer.roleName, answer.salaryTotal, answer.dept], function(err, res) {
         if (err) throw err;
-        console.table(role);
+        console.log('Role added!')
+        viewRoles();
         mainMenu();
       });
     });
