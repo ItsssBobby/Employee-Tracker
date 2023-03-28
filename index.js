@@ -215,13 +215,14 @@ function addRole() {
       }
     ])
     .then((answer) => {
-
-
       db.query("INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)", [answer.roleName, answer.salaryTotal, answer.dept], function(err, res) {
         if (err) throw err;
         console.log('Role added!')
-        viewRoles();
-        mainMenu();
+        db.query('SELECT * FROM role', function(err, res) {
+          if (err) throw err;
+          console.table(res);
+          mainMenu();
+        });
       });
     });
   });
